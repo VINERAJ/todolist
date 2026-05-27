@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>To-Do List</title>
+        <link rel="stylesheet" href="styles.css">
+        <script src="script.js" defer></script>
+    </head>
+    <body>
+        <div id="app">
+            <h1>My To-Do List</h1>
+            <button id="showTaskFormBtn">Add a New Task</button>
+            <div id="addTaskForm" style="display: none;">
+                <input type="text" id="taskInput" placeholder="Enter a new task...">
+                <input type="text" id="taskDesc" placeholder="Enter task description...">
+                <input type="date" id="taskDate">
+                <button id="addTaskBtn">Add Task</button>
+            </div>
+            <div id="taskList"></div>
+            <p id="noTasksMsg" style="display: none;">No tasks yet. Add one to get started!</p>
+        </div>
+    </body>
+</html>
