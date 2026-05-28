@@ -8,7 +8,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const taskList = document.getElementById('taskList');
     const noTasksMsg = document.getElementById('noTasksMsg');
 
-    const apiUrl = 'http://localhost:3000/todos';
+    // const apiUrl = 'http://localhost:3000/todos';
+    const apiUrl = 'https://todolist-lgen.onrender.com/todos';
 
     function updateTaskListView() {
         if (taskList.children.length === 0) {
@@ -78,17 +79,24 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     async function fetchTasks() {
+        taskList.innerHTML = '<p>Loading tasks...</p>';
+        noTasksMsg.style.display = 'none';
         try {
             const response = await fetch(apiUrl);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
             const tasks = await response.json();
             taskList.innerHTML = ''; // Clear existing tasks
             tasks.forEach(task => {
                 const taskElement = createTaskElement(task);
                 taskList.appendChild(taskElement);
             });
-            updateTaskListView();
         } catch (error) {
             console.error('Error fetching tasks:', error);
+            taskList.innerHTML = '<p style="color: red; text-align: center;">Failed to load tasks. Please try again later.</p>';
+        } finally {
+            updateTaskListView();
         }
     }
 
