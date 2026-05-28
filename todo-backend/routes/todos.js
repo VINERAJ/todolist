@@ -5,13 +5,11 @@ const path = require('path');
 
 const tasksFilePath = path.join(__dirname, '../data/tasks.json');
 
-// Helper function to read tasks from the JSON file
 const readTasks = () => {
     const tasksData = fs.readFileSync(tasksFilePath);
     return JSON.parse(tasksData);
 };
 
-// Helper function to write tasks to the JSON file
 const writeTasks = (tasks) => {
     fs.writeFileSync(tasksFilePath, JSON.stringify(tasks, null, 2));
 };
@@ -37,7 +35,6 @@ router.post('/', (req, res) => {
     res.status(201).json(newTask);
 });
 
-// DELETE a task
 router.delete('/del/:id', (req, res) => {
     let tasks = readTasks();
     const taskId = parseInt(req.params.id, 10);

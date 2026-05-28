@@ -1,8 +1,11 @@
 {
   "devDependencies": {
     "@testing-library/dom": "^10.4.1",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/user-event": "^14.6.1",
     "cypress": "^14.5.4",
     "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0",
     "jsdom": "^27.0.1"
   },
   "name": "todolist",
@@ -177,10 +180,6 @@
   },
   "scripts": {
     "test": "jest"
-  },
-  "jest": {
-    "testEnvironment": "jsdom",
-    "setupFilesAfterEnv": ["@testing-library/dom/extend-expect"]
   },
   "repository": {
     "type": "git",

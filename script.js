@@ -87,7 +87,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
             const tasks = await response.json();
-            taskList.innerHTML = ''; // Clear existing tasks
+            taskList.innerHTML = '';
             tasks.forEach(task => {
                 const taskElement = createTaskElement(task);
                 taskList.appendChild(taskElement);
@@ -129,7 +129,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const taskElement = createTaskElement(createdTask);
             taskList.appendChild(taskElement);
 
-            // Clear input and hide form
             taskInput.value = '';
             taskDesc.value = '';
             taskDate.value = '';
@@ -160,6 +159,5 @@ document.addEventListener('DOMContentLoaded', () => {
     taskDesc.addEventListener('keypress', enterKeyHandler);
     taskDate.addEventListener('keypress', enterKeyHandler);
 
-    // Initial fetch of tasks
     fetchTasks();
 });

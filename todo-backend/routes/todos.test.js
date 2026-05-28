@@ -1,5 +1,5 @@
 const request = require('supertest');
-const app = require('../app'); // Import your express app
+const app = require('../app');
 
 describe('GET /todos', () => {
   it('should return a list of tasks', async () => {
@@ -9,7 +9,7 @@ describe('GET /todos', () => {
   });
 });
 
-// ... existing code ...
+
 describe('POST /todos', () => {
   it('should create a new task', async () => {
     const newTask = {
@@ -18,7 +18,7 @@ describe('POST /todos', () => {
       dueDate: '2025-01-01'
     };
 
-    // 1. Create the task
+
     const createResponse = await request(app)
       .post('/todos')
       .send(newTask);
