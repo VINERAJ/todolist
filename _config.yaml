@@ -1,0 +1,6 @@
+exclude:
+  - todo-backend/
+  - node_modules/
+  - .github/
+  - .gitignore
+  - README.md
