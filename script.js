@@ -8,6 +8,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const taskList = document.getElementById('taskList');
     const noTasksMsg = document.getElementById('noTasksMsg');
 
+    const apiUrl = 'http://localhost:3000/todos';
+
     function updateTaskListView() {
         if (taskList.children.length === 0) {
             noTasksMsg.style.display = 'block';
@@ -16,65 +18,120 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    function addTask() {
-        const taskText = taskInput.value.trim();
-        const taskDescText = taskDesc.value.trim();
-        const taskDateValue = taskDate.value;
-        
-        if (taskText === '') {
-            alert('Please enter a task');
-            return;
-        }
-        if (taskDescText === '') {
-            alert('Please enter a description');
-            return;
-        }
-        if (taskDateValue === '') {
-            alert('Please select a date');
-            return;
-        }
-        
-        // Create task element
+    function createTaskElement(task) {
         const taskDiv = document.createElement('div');
         taskDiv.className = 'task';
-        
+        if (task.completed) {
+            taskDiv.classList.add('completed');
+        }
+
         const taskDetails = document.createElement('span');
-        taskDetails.textContent = `${taskText} - ${taskDescText} (Due: ${taskDateValue})`;
-        
+        taskDetails.textContent = `${task.title} - ${task.description} (Due: ${task.dueDate})`;
+
         const taskActions = document.createElement('div');
         taskActions.className = 'task-actions';
 
         const checkbox = document.createElement('input');
         checkbox.type = 'checkbox';
+        checkbox.checked = task.completed;
         checkbox.addEventListener('change', () => {
             taskDiv.classList.toggle('completed');
+            try {
+                const response = fetch(`${apiUrl}/completed/${task.id}/${checkbox.checked}`, {
+                    method: 'POST',
+                });
+                console.log(response.ok);
+                if (!response.ok) {
+                    console.error('Failed to update task status');
+                }
+            } catch (error) {
+                console.error('Error updating task status:', error);
+            }
         });
 
         const deleteBtn = document.createElement('button');
         deleteBtn.className = 'delete-btn';
-        deleteBtn.innerHTML = '&times;'; // Using HTML entity for a 'x' icon
-        deleteBtn.addEventListener('click', () => {
-            taskList.removeChild(taskDiv);
-            updateTaskListView();
+        deleteBtn.innerHTML = '&times;';
+        deleteBtn.addEventListener('click', async () => {
+            try {
+                const response = await fetch(`${apiUrl}/del/${task.id}`, {
+                    method: 'DELETE',
+                });
+                if (response.ok) {
+                    taskList.removeChild(taskDiv);
+                    updateTaskListView();
+                } else {
+                    console.error('Failed to delete task');
+                }
+            } catch (error) {
+                console.error('Error deleting task:', error);
+            }
         });
 
         taskActions.appendChild(checkbox);
         taskActions.appendChild(deleteBtn);
-        
+
         taskDiv.appendChild(taskDetails);
         taskDiv.appendChild(taskActions);
-        
-        // Add to list
-        taskList.appendChild(taskDiv);
-        
-        // Clear input and hide form
-        taskInput.value = '';
-        taskDesc.value = '';
-        taskDate.value = '';
-        addTaskForm.style.display = 'none';
-        showTaskFormBtn.style.display = 'block';
-        
-        updateTaskListView();
+
+        return taskDiv;
+    }
+
+    async function fetchTasks() {
+        try {
+            const response = await fetch(apiUrl);
+            const tasks = await response.json();
+            taskList.innerHTML = ''; // Clear existing tasks
+            tasks.forEach(task => {
+                const taskElement = createTaskElement(task);
+                taskList.appendChild(taskElement);
+            });
+            updateTaskListView();
+        } catch (error) {
+            console.error('Error fetching tasks:', error);
+        }
+    }
+
+    async function addTask() {
+        const taskText = taskInput.value.trim();
+        const taskDescText = taskDesc.value.trim();
+        const taskDateValue = taskDate.value;
+
+        if (taskText === '' || taskDescText === '' || taskDateValue === '') {
+            alert('Please fill out all fields');
+            return;
+        }
+
+        const newTask = {
+            title: taskText,
+            description: taskDescText,
+            dueDate: taskDateValue,
+            completed: false
+        };
+
+        try {
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(newTask),
+            });
+            const createdTask = await response.json();
+            const taskElement = createTaskElement(createdTask);
+            taskList.appendChild(taskElement);
+
+            // Clear input and hide form
+            taskInput.value = '';
+            taskDesc.value = '';
+            taskDate.value = '';
+            addTaskForm.style.display = 'none';
+            showTaskFormBtn.style.display = 'block';
+
+            updateTaskListView();
+        } catch (error) {
+            console.error('Error adding task:', error);
+        }
     }
 
     showTaskFormBtn.addEventListener('click', () => {
@@ -95,6 +152,6 @@ document.addEventListener('DOMContentLoaded', () => {
     taskDesc.addEventListener('keypress', enterKeyHandler);
     taskDate.addEventListener('keypress', enterKeyHandler);
 
-    // Initial check
-    updateTaskListView();
+    // Initial fetch of tasks
+    fetchTasks();
 });
